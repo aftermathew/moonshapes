@@ -1,0 +1,14 @@
+{
+  "name": "hebcal-js",
+  "homepage": "https://github.com/aftermathew/hebcal-js",
+  "version": "2.2.0",
+  "_release": "2.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.2.0",
+    "commit": "1af2fedc237d8f09ad76ec3a91fc22695d1bf823"
+  },
+  "_source": "git://github.com/aftermathew/hebcal-js.git",
+  "_target": "~2.2.0",
+  "_originalSource": "aftermathew/hebcal-js"
+}

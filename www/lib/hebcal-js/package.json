@@ -1,0 +1,42 @@
+{
+	"name": "hebcal",
+	"version": "2.2.0",
+	"author": "Eyal Schachter (https://github.com/Scimonster)",
+	"contributors": [
+		"Michael J. Radwin (https://github.com/mjradwin)",
+		"Danny Sadinoff (https://github.com/dsadinoff)"
+	],
+	"description": "An easy to use, richly-featured, perpetual Jewish Calendar API",
+	"keywords": [
+		"hebcal",
+		"hebrew",
+		"calendar",
+		"jewish",
+		"holidays",
+		"chagim",
+		"sedra",
+		"date",
+		"dafyomi",
+		"zemanim",
+		"zmanim"
+	],
+	"homepage": "https://github.com/hebcal/hebcal-js",
+	"bugs": "https://github.com/hebcal/hebcal-js/issues",
+	"license": "GPL-3.0+",
+	"main": "hebcal.js",
+	"bin": {
+		"hebcaljs": "bin/hebcal.js"
+	},
+	"dependencies": {
+		"suncalc": "",
+		"gematriya": ""
+	},
+	"devDependencies": {
+		"hrtimer": ""
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/hebcal/hebcal-js.git"
+	},
+	"readmeFilename": "README.md"
+}
