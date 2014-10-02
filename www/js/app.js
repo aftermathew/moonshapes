@@ -34,10 +34,11 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     })
 
     .state('app.search', {
-      url: "/search",
+      url: "/calendar",
       views: {
         'menuContent' :{
-          templateUrl: "templates/search.html"
+          templateUrl: "templates/calendar.html",
+          controller: 'CalendarCtrl'
         }
       }
     })
