@@ -1,4 +1,4 @@
-angular.module('starter.controllers', ['d3'])
+angular.module('starter.controllers', ['importedFactories'])
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
   // Form data for the login modal
   $scope.loginData = {};
@@ -32,11 +32,7 @@ angular.module('starter.controllers', ['d3'])
   };
 })
 
-.controller('PlaylistsCtrl', ['$scope', 'd3Service',function($scope, d3Service) {
-  d3Service.d3().then(function(d3) {
-    console.log(d3);
-  });
-
+.controller('PlaylistsCtrl', ['$scope', 'd3',function($scope, d3) {
   $scope.playlists = [
     { title: 'Reggae', id: 1 },
     { title: 'Chill', id: 2 },
@@ -48,4 +44,87 @@ angular.module('starter.controllers', ['d3'])
 }])
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
+})
+.controller('CalendarCtrl', function($scope, $window, d3, hebcal){
+  console.log(new Hebcal());
+
+  // intially set background so we don't fade from black
+  d3.select('.calendar-screen')
+    .style('background-color', function() {
+      return 'hsl(' + (Math.random() * 360) + ',70%,90%)';
+  });
+
+  // // Slowly change background color
+  // // subtle little animation.
+  // setInterval(function(){
+  //     d3.select('.calendar-screen')
+  //       .transition()
+  //       .duration(3000)
+  //       .style('background-color', function() {
+  //         return 'hsl(' + (Math.random() * 360) + ',70%,90%)';
+  //       });
+  // }, 5000);
+
+  /// *** ///
+
+  var dataset = {
+    apples: [2, 4, 8, 16, 32],
+    oranges: [53245, 28479, 19697, 24037, 40245],
+    lemons: [53245, 28479, 19697, 24037, 40245],
+    months: _.map(Hebcal().months, function(month){ return month.days.length; })
+  };
+
+  var width = $window.innerWidth,
+      height = $window.innerHeight,
+      cwidth = 25;
+
+  var color = d3.scale.category20c();
+
+  var pie = d3.layout.pie().sort(null);
+  var arc = d3.svg.arc();
+
+  var svg = d3.select(".calendar-screen")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+  var gs = svg.selectAll("g")
+    .data(d3.values(dataset))
+    .enter()
+    .append("g");
+
+  var centroids = [];
+
+  gs.selectAll("path")
+    .data(function(d) { return pie(d); })
+    .enter()
+    .append("path")
+    .attr("fill", function(d, i) { return color(i); })
+    .attr("d", function(d, i, j) {
+        var myarc = arc.innerRadius( 18 + cwidth * j * 2)
+          .outerRadius( cwidth * (2 * j + 1));
+
+      centroids.push(myarc.centroid(d));
+      return myarc(d);
+    });
+
+  gs.selectAll("text")
+    .data(function(d) { return d; })
+    .enter()
+    .append("text")
+    .attr("transform", function(d, i, j) {
+      return "translate(" + centroids[i + j * 5]+ ")";
+    })
+//    .attr("stroke", "#000000")
+    .attr("fill",  "#000000")
+    .attr("text-anchor", "middle")
+    .text(function(d,i,j) {
+      if(j === 3)
+        return new Hebcal().months[i].getName();
+      else
+        return d;
+    });
+
 });

@@ -6,7 +6,10 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers'])
 
-.run(function($ionicPlatform) {
+.run(function($rootScope, $ionicPlatform) {
+  // add lodash to $rootscope for access in views
+  $rootScope._ = _;
+
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
