@@ -45,13 +45,14 @@ angular.module('starter.controllers', ['importedFactories'])
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 })
-.controller('CalendarCtrl', function($scope, $window, d3, hebcal){
+.controller('CalendarCtrl', function($scope, $window, d3, hebcal, suncalc){
   console.log(new Hebcal());
 
   // intially set background so we don't fade from black
   d3.select('.calendar-screen')
     .style('background-color', function() {
-      return 'hsl(' + (Math.random() * 360) + ',70%,90%)';
+      return '#222222';
+      //return 'hsl(' + (Math.random() * 360) + ',70%,90%)';
   });
 
   // // Slowly change background color
@@ -66,65 +67,163 @@ angular.module('starter.controllers', ['importedFactories'])
   // }, 5000);
 
   /// *** ///
+  var width = $window.innerWidth,
+     height = $window.innerHeight;
 
-  var dataset = {
-    apples: [2, 4, 8, 16, 32],
-    oranges: [53245, 28479, 19697, 24037, 40245],
-    lemons: [53245, 28479, 19697, 24037, 40245],
-    months: _.map(Hebcal().months, function(month){ return month.days.length; })
+
+  // This seems like an overkill way of saying
+  // january 1st 2014 (wed)
+  var now = new Date(d3.time.year.floor(new Date()));
+
+  var spacetime = d3.select('.calendar-screen');
+  var radius = Math.min(width, height);
+
+  var radii = {
+    "sun": radius / 8,
+    "earthOrbit": radius / 2.5,
+    "earth": radius / 32,
+    "moonOrbit": radius / 16,
+    "moon": radius / 96
   };
 
-  var width = $window.innerWidth,
-      height = $window.innerHeight,
-      cwidth = 25;
-
-  var color = d3.scale.category20c();
-
-  var pie = d3.layout.pie().sort(null);
-  var arc = d3.svg.arc();
-
-  var svg = d3.select(".calendar-screen")
-    .append("svg")
+  // Space
+  var svg = spacetime.append("svg")
     .attr("width", width)
     .attr("height", height)
     .append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-  var gs = svg.selectAll("g")
-    .data(d3.values(dataset))
-    .enter()
-    .append("g");
+  // Sun
+  svg.append("circle")
+    .attr("class", "sun")
+    .attr("r", radii.sun)
+    .style("fill", "rgba(255, 204, 0, 1.0)");
 
-  var centroids = [];
+  // Earth's orbit
+  svg.append("circle")
+    .attr("class", "earthOrbit")
+    .attr("r", radii.earthOrbit)
+    .style("fill", "none")
+    .style("stroke", "rgba(255, 204, 0, 0.25)");
 
-  gs.selectAll("path")
-    .data(function(d) { return pie(d); })
-    .enter()
-    .append("path")
-    .attr("fill", function(d, i) { return color(i); })
-    .attr("d", function(d, i, j) {
-        var myarc = arc.innerRadius( 18 + cwidth * j * 2)
-          .outerRadius( cwidth * (2 * j + 1));
+  // Current position of Earth in its orbit
+  var earthOrbitPosition = d3.svg.arc()
+    .outerRadius(radii.earthOrbit + 1)
+    .innerRadius(radii.earthOrbit - 1)
+    .startAngle(0)
+    .endAngle(0);
+  svg.append("path")
+    .attr("class", "earthOrbitPosition")
+    .attr("d", earthOrbitPosition)
+    .style("fill", "rgba(255, 204, 0, 0.75)");
 
-      centroids.push(myarc.centroid(d));
-      return myarc(d);
+  // Earth
+  svg.append("circle")
+    .attr("class", "earth")
+    .attr("r", radii.earth)
+    .attr("transform", "translate(0," + -radii.earthOrbit + ")")
+    .style("fill", "rgba(113, 170, 255, 1.0)");
+
+  // Time of day
+  var day = d3.svg.arc()
+    .outerRadius(radii.earth)
+    .innerRadius(0)
+    .startAngle(0)
+    .endAngle(0);
+  svg.append("path")
+    .attr("class", "day")
+    .attr("d", day)
+    .attr("transform", "translate(0," + -radii.earthOrbit + ")")
+    .style("fill", "rgba(53, 110, 195, 1.0)");
+
+  // Moon's orbit
+  svg.append("circle")
+    .attr("class", "moonOrbit")
+    .attr("r", radii.moonOrbit)
+    .attr("transform", "translate(0," + -radii.earthOrbit + ")")
+    .style("fill", "none")
+    .style("stroke", "rgba(113, 170, 255, 0.25)");
+
+  // Current position of the Moon in its orbit
+  var moonOrbitPosition = d3.svg.arc()
+    .outerRadius(radii.moonOrbit + 1)
+    .innerRadius(radii.moonOrbit - 1)
+    .startAngle(0)
+    .endAngle(0);
+  svg.append("path")
+    .attr("class", "moonOrbitPosition")
+    .attr("d", moonOrbitPosition(now))
+    .attr("transform", "translate(0," + -radii.earthOrbit + ")")
+    .style("fill", "rgba(113, 170, 255, 0.75)");
+
+  // Moon
+  svg.append("circle")
+    .attr("class", "moon")
+    .attr("r", radii.moon)
+    .attr("transform", "translate(0," + (-radii.earthOrbit + -radii.moonOrbit) + ")")
+    .style("fill", "rgba(150, 150, 150, 1.0)");
+
+  // Update the clock every second
+  setTimeout(function () {
+
+    now = new Date();
+    var totalDaysInYear = d3.time.days(d3.time.year.floor(now),
+      d3.time.year.ceil(now)).length;
+
+    var hoursSinceYearStarted = d3.time.hours(d3.time.year.floor(now), now).length;
+    var totalHoursInYear = d3.time.hours(d3.time.year.floor(now),
+      d3.time.year.ceil(now)).length;
+    var fractionOfYear = hoursSinceYearStarted / totalHoursInYear;
+    var interpolateEarthOrbitPosition = d3.interpolate(earthOrbitPosition.endAngle()(), (2 * Math.PI * fractionOfYear));
+
+    var secondsSinceDayStarted = d3.time.seconds(d3.time.day.floor(now), now).length;
+    var totalSecondsInDay = d3.time.seconds(d3.time.day.floor(now), d3.time.day.ceil(now)).length;
+    var fractionOfDay = secondsSinceDayStarted / totalSecondsInDay;
+    var interpolateDay = d3.interpolate(day.endAngle()(), (2 * Math.PI * fractionOfDay));
+
+    var hoursSinceMonthStarted = d3.time.hours(d3.time.month.floor(now), now).length;
+    var totalHoursInMonth = d3.time.hours(d3.time.month.floor(now), d3.time.month.ceil(now)).length;
+    var fractionOfMonth = hoursSinceMonthStarted / totalHoursInMonth;
+    var interpolateMoonOrbitPosition = d3.interpolate(moonOrbitPosition.endAngle()(), (2 * Math.PI * fractionOfMonth));
+
+    var dateOfEarthPostion = function() {
+      var day = earthOrbitPosition.endAngle()() / (2 * Math.PI) * totalDaysInYear;
+      var date = d3.time.year.floor(new Date());
+      date.setDate(date.getDate() + day);
+      return date;
+    };
+
+    d3.transition().duration(4000).tween("orbit", function () {
+      return function (t) {
+        // Animate Earth orbit position
+        d3.select(".earthOrbitPosition").attr("d", earthOrbitPosition.endAngle(interpolateEarthOrbitPosition(t)));
+
+        // Transition Earth
+        d3.select(".earth")
+          .attr("transform", "translate(" + radii.earthOrbit * Math.sin(interpolateEarthOrbitPosition(t) - earthOrbitPosition.startAngle()()) + "," + -radii.earthOrbit * Math.cos(interpolateEarthOrbitPosition(t) - earthOrbitPosition.startAngle()()) + ")");
+
+        // Animate day
+        // Transition day
+        d3.select(".day")
+          .attr("d", day.endAngle(interpolateDay(t)))
+          .attr("transform", "translate(" + radii.earthOrbit * Math.sin(interpolateEarthOrbitPosition(t) - earthOrbitPosition.startAngle()()) + "," + -radii.earthOrbit * Math.cos(interpolateEarthOrbitPosition(t) - earthOrbitPosition.startAngle()()) + ")");
+
+        // Transition Moon orbit
+        d3.select(".moonOrbit")
+          .attr("transform", "translate(" + radii.earthOrbit * Math.sin(interpolateEarthOrbitPosition(t) - earthOrbitPosition.startAngle()()) + "," + -radii.earthOrbit * Math.cos(interpolateEarthOrbitPosition(t) - earthOrbitPosition.startAngle()()) + ")");
+
+        var moonPhase = SunCalc.getMoonIllumination(dateOfEarthPostion()).phase * 2 * Math.PI;
+        // Animate Moon orbit position
+        // Transition Moon orbit position
+        d3.select(".moonOrbitPosition")
+          .attr("d", moonOrbitPosition.endAngle(moonPhase))
+          .attr("transform", "translate(" + radii.earthOrbit * Math.sin(interpolateEarthOrbitPosition(t) - earthOrbitPosition.startAngle()()) + "," + -radii.earthOrbit * Math.cos(interpolateEarthOrbitPosition(t) - earthOrbitPosition.startAngle()()) + ")");
+
+        // Transition Moon
+        d3.select(".moon")
+          .attr("transform", "translate(" + (radii.earthOrbit * Math.sin(interpolateEarthOrbitPosition(t) - earthOrbitPosition.startAngle()()) + radii.moonOrbit * Math.sin(moonPhase - moonOrbitPosition.startAngle()())) + "," + (-radii.earthOrbit * Math.cos(interpolateEarthOrbitPosition(t) - earthOrbitPosition.startAngle()()) + -radii.moonOrbit * Math.cos(moonPhase - moonOrbitPosition.startAngle()())) + ")");
+      };
     });
-
-  gs.selectAll("text")
-    .data(function(d) { return d; })
-    .enter()
-    .append("text")
-    .attr("transform", function(d, i, j) {
-      return "translate(" + centroids[i + j * 5]+ ")";
-    })
-//    .attr("stroke", "#000000")
-    .attr("fill",  "#000000")
-    .attr("text-anchor", "middle")
-    .text(function(d,i,j) {
-      if(j === 3)
-        return new Hebcal().months[i].getName();
-      else
-        return d;
-    });
+  }, 1000);
 
 });
