@@ -4,4 +4,7 @@ angular.module('importedFactories', [])
   })
   .factory('hebcal', function(){
     return window.Hebcal;
+  })
+  .factory('suncalc', function(){
+    return window.Suncalc;
   });

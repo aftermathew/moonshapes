@@ -21,6 +21,7 @@
   "dependencies": {
     "d3": "~3.4.11",
     "hebcal-js": "aftermathew/hebcal-js#~2.2.0",
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "suncalc": "*"
   }
 }
