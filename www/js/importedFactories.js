@@ -6,5 +6,5 @@ angular.module('importedFactories', [])
     return window.Hebcal;
   })
   .factory('suncalc', function(){
-    return window.Suncalc;
+    return window.SunCalc;
   });
