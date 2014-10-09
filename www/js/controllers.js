@@ -43,11 +43,10 @@ angular.module('starter.controllers', ['importedFactories'])
   ];
 }])
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
-})
-.controller('CalendarCtrl', function($scope, $window, d3, hebcal, suncalc){
-  console.log(new Hebcal());
-
+.controller('PlaylistCtrl', ['$scope', '$stateParams', function($scope, $stateParams) {
+}])
+.controller('CalendarCtrl', ['$scope', '$window', 'd3', 'hebcal', 'suncalc',
+  function($scope, $window, d3, hebcal, suncalc){
   // intially set background so we don't fade from black
   d3.select('.calendar-screen')
     .style('background-color', function() {
@@ -255,4 +254,4 @@ angular.module('starter.controllers', ['importedFactories'])
     });
   }, 1000);
 
-});
+}]);
