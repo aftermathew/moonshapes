@@ -54,17 +54,6 @@ angular.module('starter.controllers', ['importedFactories', 'calendarData'])
       //return 'hsl(' + (Math.random() * 360) + ',70%,90%)';
   });
 
-  // // Slowly change background color
-  // // subtle little animation.
-  // setInterval(function(){
-  //     d3.select('.calendar-screen')
-  //       .transition()
-  //       .duration(3000)
-  //       .style('background-color', function() {
-  //         return 'hsl(' + (Math.random() * 360) + ',70%,90%)';
-  //       });
-  // }, 5000);
-
   /// *** ///
   var width = $window.innerWidth,
      height = $window.innerHeight;
