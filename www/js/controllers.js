@@ -1,4 +1,4 @@
-angular.module('starter.controllers', ['importedFactories'])
+angular.module('starter.controllers', ['importedFactories', 'calendarData'])
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
   // Form data for the login modal
   $scope.loginData = {};
@@ -45,8 +45,8 @@ angular.module('starter.controllers', ['importedFactories'])
 
 .controller('PlaylistCtrl', ['$scope', '$stateParams', function($scope, $stateParams) {
 }])
-.controller('CalendarCtrl', ['$scope', '$window', 'd3', 'hebcal', 'suncalc',
-  function($scope, $window, d3, hebcal, suncalc){
+.controller('CalendarCtrl', ['$scope', '$window', 'd3', 'hebcal', 'suncalc', 'calendarDataService',
+  function($scope, $window, d3, hebcal, suncalc, calendarDataService){
   // intially set background so we don't fade from black
   d3.select('.calendar-screen')
     .style('background-color', function() {
@@ -68,7 +68,6 @@ angular.module('starter.controllers', ['importedFactories'])
   /// *** ///
   var width = $window.innerWidth,
      height = $window.innerHeight;
-
 
   // This seems like an overkill way of saying
   // january 1st 2014 (wed)
