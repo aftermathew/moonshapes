@@ -1,4 +1,4 @@
-angular.module('calendarData', ['importedFactories' ])
+angular.module('calendarData', ['importedFactories'])
   .service('calendarDataService', ['d3', 'hebcal', 'suncalc', function(d3, hebcal, suncalc) {
     var data;
     var that = this;
