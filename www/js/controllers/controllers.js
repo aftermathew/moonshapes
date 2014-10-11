@@ -46,14 +46,18 @@ angular.module('starter.controllers', ['importedFactories', 'calendarData'])
 .controller('PlaylistCtrl', ['$scope', '$stateParams', function($scope, $stateParams) {
 }])
 .controller('CalendarCtrl', ['$scope', '$window', 'd3', 'hebcal', 'suncalc', 'calendarDataService',
-  function($scope, $window, d3, hebcal, suncalc, calendarDataService){
-  // intially set background so we don't fade from black
+  function($scope, $window, d3, hebcal, suncalc,
+    calendarDataService){
+
   d3.select('.calendar-screen')
     .style('background-color', function() {
       return '#222222';
-      //return 'hsl(' + (Math.random() * 360) + ',70%,90%)';
   });
 
+  $scope.title = "Calendar View";
+  $scope.calendarData = calendarDataService.getData();
+
+/*
   /// *** ///
   var width = $window.innerWidth,
      height = $window.innerHeight;
@@ -241,5 +245,5 @@ angular.module('starter.controllers', ['importedFactories', 'calendarData'])
       };
     });
   }, 1000);
-
+*/
 }]);
