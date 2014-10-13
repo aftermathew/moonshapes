@@ -4,8 +4,9 @@ angular.module('calendarData', ['importedFactories'])
     var that = this;
 
     Hebcal.events.on('ready', function(){
+      // TODO add localization data when it comes in
       // rebuilding like this is dumb, but it's just POC for now.
-      data = that.buildData(data[0].greg(), data[data.length - 1].greg());
+      //data = that.buildData(data[0].greg(), data[data.length - 1].greg());
     });
 
     var makeDataLunar = function(days){
@@ -40,8 +41,16 @@ angular.module('calendarData', ['importedFactories'])
         .valueOf();
     };
 
+    var addEarthPhaseToData = function(data){
+      return _.chain(data)
+        .forEach(function(day, i){
+          day.earthPhase = i/data.length;
+        })
+        .valueOf();
+    };
+
     this.buildData = function(startDate, endDate){
-      return addMoonPhasesToData(makeDataLunar(d3.time.days(startDate, endDate)));
+      return addEarthPhaseToData(addMoonPhasesToData(makeDataLunar(d3.time.days(startDate, endDate))));
     };
 
     this.buildSolarYear = function(yearDate){
