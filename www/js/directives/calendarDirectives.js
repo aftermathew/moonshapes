@@ -12,12 +12,12 @@ angular.module('calendarDirectives', ['importedFactories'])
           window.onresize = function() {
             return scope.$apply();
           };
-          // scope.$watch(function(){
-          //     return angular.element(window)[0].innerWidth;
-          //   }, function(){
-          //     return scope.render(scope.data);
-          //   }
-          // );
+          scope.$watch(function(){
+              return angular.element(window)[0].innerWidth;
+            }, function(){
+              return scope.render(scope.data);
+            }
+          );
           //
           // // watch for data changes and re-render
           scope.$watch('data', function(newVals, oldVals) {
