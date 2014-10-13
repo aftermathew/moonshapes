@@ -141,7 +141,8 @@ angular.module('calendarDirectives', ['importedFactories'])
               var totalHoursInYear = d3.time.hours(d3.time.year.floor(now),
                 d3.time.year.ceil(now)).length;
               var fractionOfYear = hoursSinceYearStarted / totalHoursInYear;
-              var interpolateEarthOrbitPosition = d3.interpolate(earthOrbitPosition.endAngle()(), (2 * Math.PI * fractionOfYear));
+              var interpolateEarthOrbitPosition = d3.interpolate(earthOrbitPosition.endAngle()(),
+                (2 * Math.PI * fractionOfYear));
 
               var earthOrbitPositionToDate = function() {
                 // TODO add a year parameter that defaults to this year
