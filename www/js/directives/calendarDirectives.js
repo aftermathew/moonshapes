@@ -148,78 +148,82 @@ angular.module('calendarDirectives', ['importedFactories'])
               return date;
             };
 
-              var dateToRadians = function(date){
-                date = date || now;
 
-                var dateYear = d3.time.year.floor(date);
-                var nextDateYear = d3.time.year.ceil(date);
-                var numDaysInYear = d3.time.days(dateYear, nextDateYear).length;
-                var numDaysFromStartOfYearTillNow = d3.time.days(dateYear, now).length;
-                var currentYear = d3.time.year.floor(now);
+            var dateToRadians = function(date){
+              date = date || now;
 
-                return (dateYear - currentYear + numDaysFromStartOfYearTillNow / numDaysInYear) * 2 * Math.PI;
-              };
+              var dateYear = d3.time.year.floor(date);
+              var nextDateYear = (new Date(dateYear)).setFullYear(dateYear.getFullYear() + 1);
 
-              var setEarthOrbitPositionWithDate= function(date){
-                  setEarthOrbitPositionWithRadians(dateToRadians(date));
-              };
+              var numDaysInYear = d3.time.days(dateYear, nextDateYear).length;
+              var numDaysFromStartOfYearTillDate = d3.time.days(dateYear, date).length;
+              var currentYear = d3.time.year.floor(now);
 
-              var setEarthOrbitPositionWithRadians = function(radians){
-                // Transition the wide part of the orbit
-                d3.select(".earthOrbitPosition")
-                  .attr("d", earthOrbitPosition.endAngle(radians));
+              return (numDaysFromStartOfYearTillDate / numDaysInYear) * 2 * Math.PI;
+            };
 
-                // Transition the Earth itself
-                d3.select(".earth")
-                  .attr("transform", "translate(" +
-                    radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) + "," +
-                    -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) + ")");
+            var setEarthOrbitPositionWithDate = function(date){
+                setEarthOrbitPositionWithRadians(dateToRadians(date));
+            };
+
+            var setEarthOrbitPositionWithRadians = function(radians){
+              // Transition the wide part of the orbit
+              d3.select(".earthOrbitPosition")
+                .attr("d", earthOrbitPosition.endAngle(radians));
+
+              // Transition the Earth itself
+              d3.select(".earth")
+                .attr("transform", "translate(" +
+                  radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) + "," +
+                  -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) + ")");
 
 
-                // Transition Moon orbit
-                d3.select(".moonOrbit")
+              // Transition Moon orbit
+              d3.select(".moonOrbit")
+                .attr("transform", "translate(" +
+                  radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) +
+                  "," +
+                  -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) +
+                  ")");
+
+                //figure out where moon should be based on date of earths solar year
+                var moonPhase = SunCalc.getMoonIllumination(earthOrbitPositionToDate()).phase * 2 * Math.PI;
+
+                // rotate moon orbit start to be radial with earth / sun so new moon is
+                // always between earth and sun, and full moon is always in line with them
+                moonOrbitPosition.startAngle(earthOrbitPosition.endAngle()() + Math.PI);
+
+                // Animate Moon orbit position
+                // Transition Moon orbit position
+                d3.select(".moonOrbitPosition")
+                  .attr("d", moonOrbitPosition.endAngle(moonPhase + moonOrbitPosition.startAngle()()))
                   .attr("transform", "translate(" +
                     radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) +
                     "," +
                     -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) +
                     ")");
+
+                // Transition Moon
+                d3.select(".moon")
+                  .attr("transform", "translate(" +
+                    (radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) +
+                      radii.moonOrbit * Math.sin(moonOrbitPosition.endAngle()())) +
+                    "," +
+                    (-radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) +
+                     -radii.moonOrbit * Math.cos(moonOrbitPosition.endAngle()())) +
+                    ")");
               };
 
+            setEarthOrbitPositionWithRadians(0);
 
-              d3.transition().duration(20000).tween("orbit", function () {
-                return function (t) {
-                  // Animate Earth orbit position
-                  setEarthOrbitPositionWithRadians(interpolateEarthOrbitPosition(t));
+            setEarthOrbitPositionWithDate(calendarData[10].greg());
 
-
-                  // figure out where moon should be based on date of earths solar year
-                  var moonPhase = SunCalc.getMoonIllumination(earthOrbitPositionToDate()).phase * 2 * Math.PI;
-
-                  // rotate moon orbit start to be radial with earth / sun so new moon is
-                  // always between earth and sun, and full moon is always in line with them
-                  moonOrbitPosition.startAngle(earthOrbitPosition.endAngle()() + Math.PI);
-
-                  // Animate Moon orbit position
-                  // Transition Moon orbit position
-                  d3.select(".moonOrbitPosition")
-                    .attr("d", moonOrbitPosition.endAngle(moonPhase + moonOrbitPosition.startAngle()()))
-                    .attr("transform", "translate(" +
-                      radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) +
-                      "," +
-                      -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) +
-                      ")");
-
-                  // Transition Moon
-                  d3.select(".moon")
-                    .attr("transform", "translate(" +
-                      (radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) +
-                        radii.moonOrbit * Math.sin(moonOrbitPosition.endAngle()())) +
-                      "," +
-                      (-radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) +
-                       -radii.moonOrbit * Math.cos(moonOrbitPosition.endAngle()())) +
-                      ")");
-                };
-              });
+            d3.transition().duration(20000).tween("orbit", function () {
+              return function (t) {
+                // Animate Earth orbit position
+                setEarthOrbitPositionWithRadians(interpolateEarthOrbitPosition(t));
+              };
+           });
           };
         }
       };
