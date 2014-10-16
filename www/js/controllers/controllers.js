@@ -55,5 +55,5 @@ angular.module('starter.controllers', ['importedFactories', 'calendarData'])
   });
 
   $scope.title = "Calendar View";
-  $scope.calendarData = calendarDataService.getData();
+  $scope.calendarData = calendarDataService;
 }]);

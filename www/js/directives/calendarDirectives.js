@@ -34,7 +34,8 @@ angular.module('calendarDirectives', ['importedFactories'])
           var space, earthOrbitPosition, moonOrbitPosition;
 
           // define render function
-          scope.render = function(calendarData){
+          scope.render = function(data){
+            calendarData = data.getData();
             var buildCanvas = function(startDate){
               startDate = startDate || now;
               width = $window.innerWidth;
