@@ -55,8 +55,11 @@ angular.module('calendarData', ['importedFactories'])
 
     this.buildSolarYear = function(yearDate){
       // default to this year
-      yearDate = yearDate || new Date();
-      return this.buildData(d3.time.year.floor(yearDate), d3.time.year.ceil(yearDate));
+      dateyear = yearDate || new Date();
+      dateYear = d3.time.year.floor(dateyear);
+      var nextDateYear = (new Date(dateYear)).setFullYear(dateYear.getFullYear() + 1);
+
+      return this.buildData(dateYear, nextDateYear);
     };
 
     this.getData = function(){
