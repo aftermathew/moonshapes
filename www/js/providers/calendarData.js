@@ -26,7 +26,7 @@ angular.module('calendarData', ['importedFactories'])
           if(i > 0){
             var moonDiff = day.moonPhase - lastMoonPhase;
             if(moonDiff >= 0){
-              day.relativeMoonPhase = lastRelativePhase + diffMoon;
+              day.relativeMoonPhase = lastRelativeMoonPhase + moonDiff;
             } else {
               // we've gone a full cycle.
               day.relativeMoonPhase = lastRelativeMoonPhase + day.moonPhase + (1 - lastMoonPhase);
@@ -35,8 +35,8 @@ angular.module('calendarData', ['importedFactories'])
             day.relativeMoonPhase = day.moonPhase;
           }
 
-          lastPhase = day.moonPhase;
-          lastRelativePhase = day.relativeMoonPhase;
+          lastMoonPhase = day.moonPhase;
+          lastRelativeMoonPhase = day.relativeMoonPhase;
         })
         .valueOf();
     };
