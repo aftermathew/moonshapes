@@ -124,9 +124,6 @@ angular.module('calendarDirectives', ['importedFactories'])
                 .attr("stroke-dasharray", "10,5,5,5")
                 .style("fill", "none")
                 .style("stroke", "rgba(150, 150, 150, 0.25)");
-
-
-              console.log(moonOrbitLine(12));
             };
 
 
