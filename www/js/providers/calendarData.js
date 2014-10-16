@@ -66,5 +66,21 @@ angular.module('calendarData', ['importedFactories'])
       return data;
     };
 
+
+    this.findNearestDateIndex = function(date){
+      var days = daysBetweenDates(date, data[0].greg());
+
+      if(days <= 0){
+        return 0;
+      } else if (days >= data.length){
+        return data.length;
+      }
+
+      return days;
+    };
+    function daysBetweenDates(first, second) {
+      return Math.floor((first - second)/(1000*60*60*24));
+    }
+
     data = this.buildSolarYear();
   }]);
