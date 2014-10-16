@@ -131,24 +131,22 @@ angular.module('calendarDirectives', ['importedFactories'])
             svg.selectAll("*").remove();
             buildCanvas();
 
-              var totalDaysInYear = d3.time.days(d3.time.year.floor(now),
-                d3.time.year.ceil(now)).length;
+            var totalDaysInYear = d3.time.days(d3.time.year.floor(now),
+              d3.time.year.ceil(now)).length;
 
-              var hoursSinceYearStarted = d3.time.hours(d3.time.year.floor(now), now).length;
-              var totalHoursInYear = d3.time.hours(d3.time.year.floor(now),
-                d3.time.year.ceil(now)).length;
-              var fractionOfYear = hoursSinceYearStarted / totalHoursInYear;
-              var interpolateEarthOrbitPosition = d3.interpolate(earthOrbitPosition.endAngle()(),
-                (2 * Math.PI * fractionOfYear));
+            var hoursSinceYearStarted = d3.time.hours(d3.time.year.floor(now), now).length;
+            var totalHoursInYear = totalDaysInYear * 24;
+            var fractionOfYear = hoursSinceYearStarted / totalHoursInYear;
+            var interpolateEarthOrbitPosition = d3.interpolate(earthOrbitPosition.endAngle()(),
+              (2 * Math.PI * fractionOfYear));
 
-              var earthOrbitPositionToDate = function() {
-                // TODO add a year parameter that defaults to this year
-                var day = earthOrbitPosition.endAngle()() / (2 * Math.PI) * totalDaysInYear;
-                var date = d3.time.year.floor(now);
-                date.setDate(date.getDate() + day);
-                return date;
-              };
-
+            var earthOrbitPositionToDate = function() {
+              // TODO add a year parameter that defaults to this year
+              var day = earthOrbitPosition.endAngle()() / (2 * Math.PI) * totalDaysInYear;
+              var date = d3.time.year.floor(now);
+              date.setDate(date.getDate() + day);
+              return date;
+            };
 
               var dateToRadians = function(date){
                 date = date || now;
