@@ -83,14 +83,16 @@ angular.module('calendarDirectives', ['importedFactories'])
               space.append("circle")
                 .attr("class", "earth")
                 .attr("r", radii.earth)
-                .attr("transform", "translate(0," + -radii.earthOrbit + ")")
+                .attr("cx", 0)
+                .attr("cy", -radii.earthOrbit)
                 .style("fill", "rgba(113, 170, 255, 1.0)");
 
               // Moon's orbit
               space.append("circle")
                 .attr("class", "moonOrbit")
                 .attr("r", radii.moonOrbit)
-                .attr("transform", "translate(0," + -radii.earthOrbit + ")")
+                .attr("cx", 0)
+                .attr("cy", -radii.earthOrbit)
                 .style("fill", "none")
                 .style("stroke", "rgba(113, 170, 255, 0.25)");
 
@@ -103,14 +105,16 @@ angular.module('calendarDirectives', ['importedFactories'])
               space.append("path")
                 .attr("class", "moonOrbitPosition")
                 .attr("d", moonOrbitPosition)
-                .attr("transform", "translate(0," + -radii.earthOrbit + ")")
+                .attr("cx", 0)
+                .attr("cy", -radii.earthOrbit)
                 .style("fill", "rgba(113, 170, 255, 0.75)");
 
               // Moon
               space.append("circle")
                 .attr("class", "moon")
                 .attr("r", radii.moon)
-                .attr("transform", "translate(0," + (-radii.earthOrbit + -radii.moonOrbit) + ")")
+                .attr("cx", 0)
+                .attr("cy", (-radii.earthOrbit + radii.moonOrbit))
                 .style("fill", "rgba(150, 150, 150, 1.0)");
 
               // Moon Orbit Line
@@ -174,18 +178,13 @@ angular.module('calendarDirectives', ['importedFactories'])
 
                 // Transition the Earth itself
                 d3.select(".earth")
-                  .attr("transform", "translate(" +
-                    radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) + "," +
-                    -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) + ")");
-
+                  .attr("cx", radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()))
+                  .attr("cy", -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()));
 
                 // Transition Moon orbit
                 d3.select(".moonOrbit")
-                  .attr("transform", "translate(" +
-                    radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) +
-                    "," +
-                    -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) +
-                    ")");
+                  .attr("cx", radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()))
+                  .attr("cy", -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()));
 
                   //figure out where moon should be based on date of earths solar year
                   console.log(calendarData[index]);
@@ -200,21 +199,16 @@ angular.module('calendarDirectives', ['importedFactories'])
                   // Transition Moon orbit position
                   d3.select(".moonOrbitPosition")
                     .attr("d", moonOrbitPosition.endAngle(moonPhase + moonOrbitPosition.startAngle()()))
-                    .attr("transform", "translate(" +
-                      radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) +
-                      "," +
-                      -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) +
-                      ")");
-
+                    .attr("cx",radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()))
+                    .attr("cy",-radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()));
                   // Transition Moon
                   d3.select(".moon")
-                    .attr("transform", "translate(" +
+                    .attr("cx",
                       (radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) +
-                        radii.moonOrbit * Math.sin(moonOrbitPosition.endAngle()())) +
-                      "," +
+                       radii.moonOrbit * Math.sin(moonOrbitPosition.endAngle()())))
+                    .attr("cy",
                       (-radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) +
-                       -radii.moonOrbit * Math.cos(moonOrbitPosition.endAngle()())) +
-                      ")");
+                       -radii.moonOrbit * Math.cos(moonOrbitPosition.endAngle()())));
               };
 
             var setEarthOrbitPositionWithRadians = function(radians){
@@ -224,18 +218,13 @@ angular.module('calendarDirectives', ['importedFactories'])
 
               // Transition the Earth itself
               d3.select(".earth")
-                .attr("transform", "translate(" +
-                  radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) + "," +
-                  -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) + ")");
-
+                .attr("cx", radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()))
+                .attr("cy", -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()));
 
               // Transition Moon orbit
               d3.select(".moonOrbit")
-                .attr("transform", "translate(" +
-                  radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) +
-                  "," +
-                  -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) +
-                  ")");
+                .attr("cx", radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()))
+                .attr("cy", -radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()));
 
                 //figure out where moon should be based on date of earths solar year
                 var moonPhase = SunCalc.getMoonIllumination(earthOrbitPositionToDate()).phase * 2 * Math.PI;
@@ -256,13 +245,12 @@ angular.module('calendarDirectives', ['importedFactories'])
 
                 // Transition Moon
                 d3.select(".moon")
-                  .attr("transform", "translate(" +
+                  .attr("cx",
                     (radii.earthOrbit * Math.sin(earthOrbitPosition.endAngle()()) +
-                      radii.moonOrbit * Math.sin(moonOrbitPosition.endAngle()())) +
-                    "," +
+                      radii.moonOrbit * Math.sin(moonOrbitPosition.endAngle()())))
+                  .attr("cy",
                     (-radii.earthOrbit * Math.cos(earthOrbitPosition.endAngle()()) +
-                     -radii.moonOrbit * Math.cos(moonOrbitPosition.endAngle()())) +
-                    ")");
+                     -radii.moonOrbit * Math.cos(moonOrbitPosition.endAngle()())));
             };
 
             setEarthOrbitPositionWithRadians(0);
