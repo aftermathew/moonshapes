@@ -260,7 +260,6 @@ angular.module('calendarDirectives', ['importedFactories'])
             };
 
             setEarthOrbitPositionWithRadians(0);
-//            setEarthOrbitPositionWithDate(calendarData[200].greg());
 
             d3.transition().duration(20000).tween("orbit", function () {
               return function (t) {
