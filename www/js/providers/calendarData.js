@@ -1,5 +1,5 @@
 angular.module('calendarData', ['importedFactories'])
-  .service('calendarDataService', ['d3', 'hebcal', 'suncalc', function(d3, hebcal, suncalc) {
+  .service('calendarDataService', ['d3', 'hebcal', 'suncalc', function(d3, Hebcal, SunCalc) {
     var data;
     var that = this;
 
@@ -11,7 +11,7 @@ angular.module('calendarData', ['importedFactories'])
 
     var makeDataLunar = function(days){
       return _.map(days, function(day){
-        return hebcal.HDate(day);
+        return Hebcal.HDate(day);
       });
     };
 
@@ -22,7 +22,7 @@ angular.module('calendarData', ['importedFactories'])
           // use gregorian data if in lunar day
           var date = (day.greg && day.greg()) || day;
 
-          day.moonPhase = suncalc.getMoonIllumination(date).phase;
+          day.moonPhase = SunCalc.getMoonIllumination(date).phase;
           if(i > 0){
             var moonDiff = day.moonPhase - lastMoonPhase;
             if(moonDiff >= 0){
