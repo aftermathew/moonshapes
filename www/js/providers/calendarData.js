@@ -112,6 +112,77 @@ angular.module('calendarData', ['importedFactories'])
       return _.indexOf(collection, _.min(collection)) + (days - 1);
     };
 
+    this.getSolarYearSolarMonths = function(date){
+      var year = (date.getGregYearObject && date.getGregYearObject()) ||
+        (new Hebcal.HDate(date).getGregYearObject());
+
+      return year.months;
+    };
+
+    this.getLunarYearLunarMonths = function(date){
+      var year = (date.getYearObject && date.getYearObject()) ||
+        (new Hebcal.HDate(date).getYearObject());
+
+      return year.months;
+    };
+
+    this.getSolarYearLunarMonths = function(date){
+      date = date || new Date();
+      var year = (date.getGregYearObject && date.getGregYearObject()) ||
+        (new Hebcal.HDate(date).getGregYearObject());
+
+      var numDays = 0;
+      var months = [];
+      _.each(year.days(), function(day, i, days){
+        var month = day.getMonthObject();
+        var lastMonth = months[months.length - 1];
+
+        if(i === 0) {
+          months.push(month);
+          lastMonth = month;
+        } else if(// we have a new month
+            lastMonth.month !== month.month ||
+            lastMonth.year !== month.year){
+          months[months.length - 1].length = numDays;
+          numDays = 0;
+
+          months.push(month);
+        }
+
+        numDays++;
+      });
+
+      return months;
+    };
+
+    this.getLunarYearSolarMonths = function(date){
+      date = date || new Date();
+      var year = (date.getYearObject && date.getYearObject()) ||
+        (new Hebcal.HDate(date).getYearObject());
+
+      var numDays = 0;
+      var months = [];
+      _.each(year.days(), function(day, i, days){
+        var month = day.getGregMonthObject();
+        var lastMonth = months[months.length - 1];
+
+        if(i === 0) {
+          months.push(month);
+          lastMonth = month;
+        } else if(// we have a new month
+            lastMonth.month !== month.month ||
+            lastMonth.year !== month.year){
+          months[months.length - 1].length = numDays;
+          numDays = 0;
+
+          months.push(month);
+        }
+
+        numDays++;
+      });
+
+      return months;
+    };
 
     data = this.buildSolarDecade();
   }]);
