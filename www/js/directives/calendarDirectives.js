@@ -118,17 +118,23 @@ angular.module('calendarDirectives', ['importedFactories'])
                 .style("fill", "rgba(150, 150, 150, 1.0)");
 
               // Moon Orbit Line
-              moonOrbitLine = d3.svg.line()
+              var startOfYearIndex = data.findNearestDateIndex(d3.time.year.floor(now));
+              var endOfYearIndex = data.findNearestDateIndex(d3.time.year.ceil(now));
+
+              moonData = calendarData.slice(startOfYearIndex, endOfYearIndex);
+
+              var moonOrbitLine = d3.svg.line()
                 .x(function(d){
                   return radii.earthOrbit * Math.sin( Math.PI * 2 * d.earthPhase ) +
                   radii.moonOrbit * Math.sin(Math.PI * 2 * d.moonPhase + Math.PI + Math.PI * 2 * d.earthPhase); })
                 .y(function(d){ return -radii.earthOrbit * Math.cos( Math.PI * 2 * d.earthPhase ) +
                   -radii.moonOrbit * Math.cos( Math.PI * 2 * d.moonPhase + Math.PI + Math.PI * 2 * d.earthPhase); });
               space.append('path')
-                .attr("d", moonOrbitLine(calendarData))
+                .attr("d", moonOrbitLine(moonData))
                 .attr("stroke-dasharray", "10,5,5,5")
                 .style("fill", "none")
                 .style("stroke", "rgba(150, 150, 150, 0.25)");
+
             };
 
 

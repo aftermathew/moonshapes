@@ -44,7 +44,17 @@ angular.module('calendarData', ['importedFactories'])
     var addEarthPhaseToData = function(data){
       return _.chain(data)
         .forEach(function(day, i){
-          day.earthPhase = i/data.length;
+
+          var year = day.greg().getFullYear();
+          if(year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) {
+              // Leap year
+              year = 365;
+          } else {
+              // Not a leap year
+              year =  366;
+          }
+
+          day.earthPhase = d3.time.dayOfYear(day.greg()) / year;
         })
         .valueOf();
     };
@@ -62,6 +72,17 @@ angular.module('calendarData', ['importedFactories'])
       return this.buildData(dateYear, nextDateYear);
     };
 
+
+    this.buildSolarDecade = function(yearDate){
+      // default to this year
+      dateyear = yearDate || new Date();
+      dateYear = d3.time.year.floor(dateyear);
+      dateYear.setFullYear(dateYear.getFullYear() - 5);
+      var lateDateYear = (new Date(dateYear)).setFullYear(dateYear.getFullYear() + 10);
+
+      return this.buildData(dateYear, lateDateYear);
+    };
+
     this.getData = function(){
       return data;
     };
@@ -76,11 +97,20 @@ angular.module('calendarData', ['importedFactories'])
         return data.length;
       }
 
-      return days;
+      // this seem like you wouldn't need it, but we seem to have
+      // an off by one error sometimes, so here you go
+      var collection = [
+        Math.abs(data[days - 1].greg() - date),
+        Math.abs(data[days].greg() - date),
+        Math.abs(data[days + 1] - date)
+      ];
+
+      return _.indexOf(collection, _.min(collection)) + (days - 1);
     };
+
     function daysBetweenDates(first, second) {
       return Math.floor((first - second)/(1000*60*60*24));
     }
 
-    data = this.buildSolarYear();
+    data = this.buildSolarDecade();
   }]);
