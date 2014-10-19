@@ -88,6 +88,10 @@ angular.module('calendarData', ['importedFactories'])
     };
 
 
+    function daysBetweenDates(first, second) {
+      return Math.floor((first - second)/(1000*60*60*24));
+    }
+
     this.findNearestDateIndex = function(date){
       var days = daysBetweenDates(date, data[0].greg());
 
@@ -108,9 +112,6 @@ angular.module('calendarData', ['importedFactories'])
       return _.indexOf(collection, _.min(collection)) + (days - 1);
     };
 
-    function daysBetweenDates(first, second) {
-      return Math.floor((first - second)/(1000*60*60*24));
-    }
 
     data = this.buildSolarDecade();
   }]);
