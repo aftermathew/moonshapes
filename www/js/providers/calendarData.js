@@ -113,6 +113,7 @@ angular.module('calendarData', ['importedFactories'])
     };
 
     this.getSolarYearSolarMonths = function(date){
+      date = date || new Date();
       var year = (date.getGregYearObject && date.getGregYearObject()) ||
         (new Hebcal.HDate(date).getGregYearObject());
 
@@ -120,6 +121,7 @@ angular.module('calendarData', ['importedFactories'])
     };
 
     this.getLunarYearLunarMonths = function(date){
+      date = date || new Date();
       var year = (date.getYearObject && date.getYearObject()) ||
         (new Hebcal.HDate(date).getYearObject());
 
