@@ -47,7 +47,9 @@ angular.module('calendarDirectives', ['importedFactories'])
                 "earthOrbit": radius / 2.5,
                 "earth": radius / 32,
                 "moonOrbit": radius / 16,
-                "moon": radius / 96
+                "moon": radius / 96,
+                // earth orbit - a little larger than moon orbit
+                "months": (radius / 2.5) - (radius / 14)
               };
 
               // Space
@@ -134,9 +136,66 @@ angular.module('calendarDirectives', ['importedFactories'])
                 .attr("stroke-dasharray", "10,5,5,5")
                 .style("fill", "none")
                 .style("stroke", "rgba(150, 150, 150, 0.25)");
-
             };
 
+            var drawMonths = function(){
+              // debugger;
+              var color = d3.scale.category20c();
+              var dataset = [];
+              var solarMonths = data.getSolarYearSolarMonths(currentDate);
+              var lunarMonths = data.getSolarYearLunarMonths(currentDate);
+
+              dataset[0] = _.map(solarMonths, function(m){
+                return {
+                  'length': m.length,
+                  'name': m.getName()
+                };
+              });
+              dataset[1] = _.map(lunarMonths, function(m){
+                return {
+                  'length': m.length,
+                  'name': m.getName()
+                };
+              });
+
+              var pie = d3.layout.pie().sort(null);
+              var arc = d3.svg.arc();
+              var centroids = [[],[]];
+
+              var months = space.append("g");
+
+              var gs = months.selectAll("g")
+                .data(d3.values(dataset))
+                .enter()
+                .append("g");
+
+              gs.selectAll("path")
+                .data(function(d) { return pie(_.pluck(d, 'length')); })
+                .enter()
+                .append("path")
+                .attr("fill", function(d, i, j) { return color(i+ 5*j); })
+                .attr("d", function(d, i, j) {
+                    var myarc = arc.innerRadius( radii.months - 20 * j)
+                      .outerRadius( radii.months -  (20 * j + 10));
+
+                  centroids[j].push(myarc.centroid(d));
+                  return myarc(d);
+                });
+
+              gs.selectAll("text")
+                .data(function(d) { return d; })
+                .enter()
+                .append("text")
+                .attr("transform", function(d, i, j) {
+                  return "translate(" + centroids[j][i]+ ")";
+                })
+                //.attr("stroke", "#000000")
+                .attr("fill",  "#FFFFFF")
+                .attr("text-anchor", "middle")
+                .text(function(d,i,j) {
+                  return d.name;
+                });
+            };
 
             // remove all previous items before render
             svg.selectAll("*").remove();
@@ -261,7 +320,8 @@ angular.module('calendarDirectives', ['importedFactories'])
 
             setEarthOrbitPositionWithRadians(0);
 
-            d3.transition().duration(20000).tween("orbit", function () {
+            drawMonths();
+            d3.transition().duration(10000).tween("orbit", function () {
               return function (t) {
                 // Animate Earth orbit position
                 setEarthOrbitPositionWithRadians(interpolateEarthOrbitPosition(t));
