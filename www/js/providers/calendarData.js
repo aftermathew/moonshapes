@@ -186,5 +186,5 @@ angular.module('calendarData', ['importedFactories'])
       return months;
     };
 
-    data = this.buildSolarDecade();
+    data = this.buildSolarYear();
   }]);
