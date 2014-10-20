@@ -28,7 +28,7 @@ angular.module('calendarDirectives', ['importedFactories'])
               .append("svg");
 
           var width, height, radius, radii;
-          var now = new Date();
+          var currentDate = new Date();
 
           // d3 objects:
           var space, earthOrbitPosition, moonOrbitPosition;
@@ -37,7 +37,7 @@ angular.module('calendarDirectives', ['importedFactories'])
           scope.render = function(data){
             calendarData = data.getData();
             var buildCanvas = function(startDate){
-              startDate = startDate || now;
+              startDate = startDate || currentDate;
               width = $window.innerWidth;
               height = $window.innerHeight;
               radius = Math.min(width, height);
@@ -118,8 +118,8 @@ angular.module('calendarDirectives', ['importedFactories'])
                 .style("fill", "rgba(150, 150, 150, 1.0)");
 
               // Moon Orbit Line
-              var startOfYearIndex = data.findNearestDateIndex(d3.time.year.floor(now));
-              var endOfYearIndex = data.findNearestDateIndex(d3.time.year.ceil(now));
+              var startOfYearIndex = data.findNearestDateIndex(d3.time.year.floor(currentDate));
+              var endOfYearIndex = data.findNearestDateIndex(d3.time.year.ceil(currentDate));
 
               moonData = calendarData.slice(startOfYearIndex, endOfYearIndex);
 
@@ -142,10 +142,10 @@ angular.module('calendarDirectives', ['importedFactories'])
             svg.selectAll("*").remove();
             buildCanvas();
 
-            var totalDaysInYear = d3.time.days(d3.time.year.floor(now),
-              d3.time.year.ceil(now)).length;
+            var totalDaysInYear = d3.time.days(d3.time.year.floor(currentDate),
+              d3.time.year.ceil(currentDate)).length;
 
-            var hoursSinceYearStarted = d3.time.hours(d3.time.year.floor(now), now).length;
+            var hoursSinceYearStarted = d3.time.hours(d3.time.year.floor(currentDate), currentDate).length;
             var totalHoursInYear = totalDaysInYear * 24;
             var fractionOfYear = hoursSinceYearStarted / totalHoursInYear;
             var interpolateEarthOrbitPosition = d3.interpolate(earthOrbitPosition.endAngle()(),
@@ -154,21 +154,21 @@ angular.module('calendarDirectives', ['importedFactories'])
             var earthOrbitPositionToDate = function() {
               // TODO add a year parameter that defaults to this year
               var day = earthOrbitPosition.endAngle()() / (2 * Math.PI) * totalDaysInYear;
-              var date = d3.time.year.floor(now);
+              var date = d3.time.year.floor(currentDate);
               date.setDate(date.getDate() + day);
               return date;
             };
 
 
             var dateToRadians = function(date){
-              date = date || now;
+              date = date || currentDate;
 
               var dateYear = d3.time.year.floor(date);
               var nextDateYear = (new Date(dateYear)).setFullYear(dateYear.getFullYear() + 1);
 
               var numDaysInYear = d3.time.days(dateYear, nextDateYear).length;
               var numDaysFromStartOfYearTillDate = d3.time.days(dateYear, date).length;
-              var currentYear = d3.time.year.floor(now);
+              var currentYear = d3.time.year.floor(currentDate);
 
               return (numDaysFromStartOfYearTillDate / numDaysInYear) * 2 * Math.PI;
             };
